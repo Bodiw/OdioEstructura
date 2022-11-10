@@ -1,3 +1,5 @@
+package model;
+
 import java.nio.ByteBuffer;
 
 public class ByteArr {
@@ -10,6 +12,14 @@ public class ByteArr {
 
     public ByteArr(int num, int size) {
         this.arr = ByteBuffer.allocate(size).putInt(num).array();
+    }
+
+    public ByteArr(long num, int size) {
+        this.arr = ByteBuffer.allocate(8).putLong(num).array();
+        // trim the array and copy over the trailing bytes
+        byte[] tmp = new byte[size];
+        System.arraycopy(this.arr, this.arr.length - size, tmp, 0, size);
+        this.arr = tmp;
     }
 
     /**
@@ -27,14 +37,22 @@ public class ByteArr {
      * Returns a String representing the byte array in hexadecimal
      */
     public String toHexString() {
-        StringBuilder sb = new StringBuilder();
-        for (byte b : arr) {
-            sb.append(String.format("%02X", b));
-        }
-        return "0x" + sb.toString();
+        return "0x" + getHex();
     }
 
     public int getInt() {
         return ByteBuffer.wrap(arr).getInt();
+    }
+
+    public String getHex() {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : arr) {
+            sb.append(String.format("%02X", b));
+        }
+        return sb.toString();
+    }
+
+    public int size() {
+        return arr.length;
     }
 }

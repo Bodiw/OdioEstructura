@@ -1,22 +1,25 @@
+package model;
+
 import java.nio.ByteBuffer;
 
-public class Field {
+public class Arg {
 
     public int t;
     public ByteArr v;
 
-    public Field(int size, String field) {
+    public Arg(int size, String field) {
         if (field.startsWith("r")) {
             t = REGISTRY;
-            v = new ByteArr(ByteBuffer.allocate(size).putInt(Integer.valueOf(field.substring(1))).array());
+            v = new ByteArr(ByteBuffer.allocate(size).putLong(Long.valueOf(field.substring(1))).array());
         } else if (field.startsWith(".")) {
             throw new IllegalArgumentException(". operator is not supported yet");
-        } else if (field.startsWith("0x")) {
+        } else if (field.startsWith("0x") || field.startsWith("0X")) {
             t = RAW;
-            v = new ByteArr(Integer.valueOf(field.substring(2), 16), size);
+            long l = Long.valueOf(field.substring(2), 16).longValue();
+            v = new ByteArr(l, size);
         } else {
             t = RAW;
-            v = new ByteArr(Integer.parseInt(field), size);
+            v = new ByteArr(Long.parseLong(field), size);
         }
     }
 

@@ -1,13 +1,16 @@
+import gui.Gui;
+import model.Ensamblador;
+import network.AssemblerProcess;
+
 public class App {
     public static void main(String[] args) throws Exception {
         Ensamblador ens = new Ensamblador(4, 32, (int) Math.pow(2, 18));
 
-        System.out.println(ens.getRegister(0).getInt());
+        AssemblerProcess ap = new AssemblerProcess(ens);
+        Thread t = new Thread(ap);
+        t.start();
 
-        ens.ld("r0", "1");
-
-        System.out.println(ens.getRegister(0).getInt());
-
+        Gui gui = new Gui("Odio Estructura", ens);
     }
 
 }
