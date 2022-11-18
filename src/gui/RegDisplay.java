@@ -3,6 +3,7 @@ package gui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,6 +22,7 @@ public class RegDisplay extends JFrame implements ActionListener {
     RegistryLabel[] labels;
     JLabel[] labels2;
     String[] counters = { "PC", "CI", "Ciclo", "FL", "FE", "FC", "FV", "FR" };
+    HashMap<String, JLabel> lbls;
 
     public RegDisplay(String s, Ensamblador ens) {
         super(s);
@@ -28,6 +30,7 @@ public class RegDisplay extends JFrame implements ActionListener {
         this.regs = ens.getRegistries();
         this.labels = new RegistryLabel[regs.length];
         this.labels2 = new JLabel[8];
+        lbls = new HashMap<String, JLabel>();
         // display 32 registries in a 4x8 grid
 
         int width = 140;
@@ -53,19 +56,25 @@ public class RegDisplay extends JFrame implements ActionListener {
             this.add(lab);
         }
 
+        JLabel instruccion = new JLabel(ens.instruction);
+        lbls.put("instruccion", instruccion);
+        instruccion.setBounds(height, 10 * height, 270, height);
+        instruccion.setOpaque(true);
+        instruccion.setBackground(Color.WHITE);
+        this.add(instruccion);
+
         // Add a button to change the display mode
 
         JButton cycleDisplay = new JButton();
         cycleDisplay.setText(RegistryLabel.intToDisplayMode(RegistryLabel.HEX));
-        cycleDisplay.setBounds(height, 10 * height, 90, height);
+        cycleDisplay.setBounds(height, 12 * height, 90, height);
         cycleDisplay.addActionListener(this);
         this.add(cycleDisplay);
 
-        // Add a next instruction butto
-
+        // Add a next instruction butto;
         JButton nextInstruction = new JButton();
-        nextInstruction.setText("Next Instruction");
-        nextInstruction.setBounds(10 * height, 10 * height, 120, height);
+        nextInstruction.setText("Next");
+        nextInstruction.setBounds(cycleDisplay.getBounds().x + 90, cycleDisplay.getBounds().y, 90, height);
         nextInstruction.addActionListener(new nextInstructionAction());
         this.add(nextInstruction);
 
@@ -83,8 +92,9 @@ public class RegDisplay extends JFrame implements ActionListener {
 
         }
         for (int i = 0; i < labels2.length; i++) {
-            labels2[i].setText(String.format("%5s: %8d", counters[i], ens.vals[i]));
+            labels2[i].setText(String.format("%-8d<= %5s", ens.vals[i], counters[i]));
         }
+        lbls.get("instruccion").setText(ens.instruction);
     }
 
     @Override

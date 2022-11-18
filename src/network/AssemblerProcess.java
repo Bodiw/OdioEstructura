@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import model.AsmParser;
 import model.Ensamblador;
 
 public class AssemblerProcess implements Runnable {
@@ -16,6 +17,7 @@ public class AssemblerProcess implements Runnable {
     private static BufferedWriter writer;
     private static String output;
     private static Ensamblador ens;
+    private static int linea = 0;
 
     public AssemblerProcess(Ensamblador e) {
         ens = e;
@@ -29,6 +31,9 @@ public class AssemblerProcess implements Runnable {
                 // System.out.println(line);
                 output += line;
                 if (line.contains("R31")) {
+                    if (++linea == 1) {
+                        output = "88110> run" + output.substring(output.indexOf("pro.bin") + 7);
+                    }
                     System.out.println(output);
                     updateAssembler(output);
                     break;
@@ -72,30 +77,15 @@ public class AssemblerProcess implements Runnable {
     }
 
     public static void updateAssembler(String s) {
+        AsmParser ap = new AsmParser(s);
+        String[] valKeys = { "PC", "Instrucciones", "Ciclo", "FL", "FE", "FC", "FV", "FR" };
         int[] vals = new int[8];
-        String instruction;
-        String conf = s.substring(s.indexOf("PC"), s.indexOf("R01"));
-        String[] reg = s.substring(s.indexOf("R01")).split("\\s+");
-        // Process the configs
-        String[] confs = conf.split("\\s+");
-        vals[0] = Integer.parseInt(confs[0].substring(3));
-        instruction = conf.substring(conf.indexOf("PC") + 1 + vals[0] / 10, conf.indexOf("Tot.")).trim();
-        conf = conf.substring(conf.indexOf("Tot."));
-        confs = conf.split("\\s+");
-        vals[1] = Integer.parseInt(confs[2]);
-        vals[2] = Integer.parseInt(confs[6]);
-        vals[3] = Integer.parseInt(confs[7].substring(3));
-        vals[4] = Integer.parseInt(confs[8].substring(3));
-        vals[5] = Integer.parseInt(confs[9].substring(3));
-        vals[6] = Integer.parseInt(confs[10].substring(3));
-        vals[7] = Integer.parseInt(confs[11].substring(3));
-        // process the registries
-        String[] regs = new String[32];
-        regs[0] = "0x00000000";
-        for (int i = 0; i < 31; i++) {
-            regs[i + 1] = "0x" + reg[2 + 4 * i];
+        for (int i = 0; i < vals.length; i++) {
+            vals[i] = Integer.parseInt(ap.get(valKeys[i]));
         }
-        ens.updateFromProcess(vals, regs, instruction);
+        String instruction = ap.get("Instruccion");
+        String[] regs = ap.getRegistries();
+        ens.updateFromProcess(vals, regs, instruction.replace("_", " "));
     }
 
 }
