@@ -8,7 +8,10 @@ public class Ensamblador {
     public Registry[] registros;
     public ByteArr[] ram;
 
+    public String lastInstruction;
     public String instruction;
+
+    public String lastOutput;
     /*
      * public int pc;
      * public int contadorInstrucciones;
@@ -87,9 +90,15 @@ public class Ensamblador {
         return registros;
     }
 
-    public void updateFromProcess(int[] vals, String[] regs, String instruc) {
-        instruction = instruc;
+    public String getOutput() {
+        return lastOutput;
+    }
+
+    public void updateFromProcess(int[] vals, String[] regs, String instruc, String output) {
+        this.lastInstruction = instruction;
+        this.instruction = instruc;
         this.vals = vals;
+        this.lastOutput = output;
         Arg[] a = processArgs(regs);
         RegistryBuilder b = RegistryBuilder.getInstance();
         for (int i = 0; i < a.length; i++) {

@@ -4,8 +4,14 @@ import model.Ensamblador;
 
 public class Gui {
 
+    String s;
+    Ensamblador ens;
+    RegDisplay frame;
+
     public Gui(String s, Ensamblador ens) {
-        RegDisplay frame = new RegDisplay(s, ens);
+        this.s = s;
+        this.ens = ens;
+        frame = new RegDisplay(s, ens);
     }
 
 }

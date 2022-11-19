@@ -34,7 +34,15 @@ public class Registry {
         return arr.getInt();
     }
 
+    public int getIntUnSigned() {
+        return arr.getIntUnSigned();
+    }
+
     public String getHex() {
         return arr.getHex();
+    }
+
+    public boolean equals(Registry other) {
+        return this.getHex().equals(other.getHex());
     }
 }

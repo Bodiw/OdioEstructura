@@ -44,6 +44,10 @@ public class ByteArr {
         return ByteBuffer.wrap(arr).getInt();
     }
 
+    public int getIntUnSigned() {
+        return ByteBuffer.wrap(arr).getInt() & 0xFFFFFFFF;
+    }
+
     public String getHex() {
         StringBuilder sb = new StringBuilder();
         for (byte b : arr) {

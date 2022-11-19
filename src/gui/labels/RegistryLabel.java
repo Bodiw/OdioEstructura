@@ -9,6 +9,10 @@ public class RegistryLabel extends JLabel {
     private Registry reg;
     private int displayMode;
     private int regNum;
+    private int lastUpdate = 0;
+    private boolean decSign = true;
+    private boolean includeR = true;
+    private boolean spacing = true;
 
     public RegistryLabel(Registry reg, int regNum) {
         this.reg = reg;
@@ -37,12 +41,65 @@ public class RegistryLabel extends JLabel {
 
     public void setDisplayMode(int displayMode) {
         this.displayMode = displayMode;
+        String text = "";
+        String r = "";
+        String s = "";
+        if (spacing) {
+            s = " ";
+        }
+        if (includeR) {
+            r = String.format("R%02d | ", regNum);
+        }
         if (displayMode == HEX) {
-            this.setText(String.format("R%02d = ", regNum) + reg.getHex());
+            String aux = "";
+            text = reg.getHex();
+            for (int i = 0; i < 4; i++) {
+                aux += String.format("%2s" + s, text.substring(2 * i, 2 * i + 2));
+            }
+            text = r + aux;
         }
         if (displayMode == DEC) {
-            this.setText(String.format("R%02d = %08d", regNum, reg.getInt()));
+            int num = 0;
+            if (!decSign) {
+                num = reg.getIntUnSigned();
+            } else {
+                num = reg.getInt();
+            }
+            String sign = num < 0 ? (spacing ? "- " : "-") : "";
+            num = Math.abs(num);
+            if (!spacing) {
+                text = String.format("%9d", num);
+            } else {
+                int[] n = { num / 1000000, (num / 1000) % 1000, num % 1000 };
+                text = String.format("%03d %03d %03d", n[0], n[1], n[2]);
+            }
+            text = r + sign + text;
         }
+        this.setText(text);
+
+    }
+
+    public void setLastUpdate(int lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
+    public int getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void changeSign() {
+        decSign = !decSign;
+        setDisplayMode(displayMode);
+    }
+
+    public void setIncludeR(boolean r) {
+        includeR = r;
+        setDisplayMode(displayMode);
+    }
+
+    public void setIncludeSpaces(boolean s) {
+        spacing = s;
+        setDisplayMode(displayMode);
     }
 
     public static final int HEX = -1;

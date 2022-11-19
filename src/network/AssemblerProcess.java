@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 
 import model.AsmParser;
 import model.Ensamblador;
+import run.App;
 
 public class AssemblerProcess implements Runnable {
 
@@ -16,6 +17,7 @@ public class AssemblerProcess implements Runnable {
     private static BufferedReader reader;
     private static BufferedWriter writer;
     private static String output;
+    private static String output2;
     private static Ensamblador ens;
     private static int linea = 0;
 
@@ -25,16 +27,18 @@ public class AssemblerProcess implements Runnable {
 
     public static void printNext(BufferedReader reader) {
         output = "";
+        output2 = "";
         String line;
         try {
             while ((line = reader.readLine()) != null) {
                 // System.out.println(line);
                 output += line;
+                output2 += line + "\n";
                 if (line.contains("R31")) {
                     if (++linea == 1) {
                         output = "88110> run" + output.substring(output.indexOf("pro.bin") + 7);
                     }
-                    System.out.println(output);
+                    // System.out.println(output);
                     updateAssembler(output);
                     break;
                 }
@@ -44,9 +48,10 @@ public class AssemblerProcess implements Runnable {
         }
     }
 
-    public static void nextInstruction() {
+    public static void nextInstruction(int steps) {
+
         try {
-            writer.write("t\n");
+            writer.write("t " + steps + "\n");
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,8 +61,7 @@ public class AssemblerProcess implements Runnable {
     @Override
     public void run() {
         // in case of window
-        ProcessBuilder builder = new ProcessBuilder("/home/bogdan/Desktop/UPM/Estructura/emu/em88110", "-c",
-                "/home/bogdan/Desktop/UPM/Estructura/src/conf", "/home/bogdan/Desktop/UPM/Estructura/bin/pro.bin");
+        ProcessBuilder builder = new ProcessBuilder(App.emuDir, "-c", App.confDir, App.binDir);
         builder.redirectErrorStream(true);
         Process process;
         try {
@@ -85,7 +89,7 @@ public class AssemblerProcess implements Runnable {
         }
         String instruction = ap.get("Instruccion");
         String[] regs = ap.getRegistries();
-        ens.updateFromProcess(vals, regs, instruction.replace("_", " "));
+        ens.updateFromProcess(vals, regs, instruction.replace("_", " "), output2);
     }
 
 }

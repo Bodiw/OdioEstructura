@@ -11,7 +11,7 @@ public class AsmParser {
         sub1 = sub1.replaceFirst(" PC=", ",PC=");
         // After PC= there's an integer
         int b = sub1.indexOf(" ", sub1.indexOf("PC="));
-        sub1 = "Comando=" + sub1.substring(0, b) + ",Instruccion=" + sub1.substring(b + 1);
+        sub1 = "Comando=" + sub1.substring(0, b) + ",Instruccion=" + sub1.substring(b + 1).replace(",", "_");
         sub1 = sub1.trim().replace(" ", "_");
         String sub2 = s.substring(a);
         s = sub1 + "," + sub2;
