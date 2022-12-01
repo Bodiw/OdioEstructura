@@ -44,9 +44,6 @@ public class App {
 
     public static void configs(String[] args, RegDisplay rd) {
 
-        args = new String[] { "/home/bogdan/Desktop/UPM/Estructura/emu/em88110",
-                "/home/bogdan/Desktop/UPM/Estructura/src/conf", "/home/bogdan/Desktop/UPM/Estructura/bin/pro.bin",
-                "HEX", "Yes", "Yes", "CHAR", "1", "4000" };
         for (String s : args) {
             System.out.println("Arg : " + s);
         }
