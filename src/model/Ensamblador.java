@@ -12,6 +12,8 @@ public class Ensamblador {
     public String instruction;
 
     public String lastOutput;
+
+    public String lastRAM = "";
     /*
      * public int pc;
      * public int contadorInstrucciones;
@@ -94,6 +96,10 @@ public class Ensamblador {
         return lastOutput;
     }
 
+    public int getPC() {
+        return vals[0];
+    }
+
     public void updateFromProcess(int[] vals, String[] regs, String instruc, String output) {
         this.lastInstruction = instruction;
         this.instruction = instruc;
@@ -104,6 +110,10 @@ public class Ensamblador {
         for (int i = 0; i < a.length; i++) {
             registros[i] = b.size(4).value(a[i].v.getInt()).accessible(true).modifyable(true).build();
         }
+    }
+
+    public void updateRAM(String ram) {
+        this.lastRAM = ram;
     }
 
 }

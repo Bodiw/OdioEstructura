@@ -20,6 +20,10 @@ public class AssemblerProcess implements Runnable {
     private static String output2;
     private static Ensamblador ens;
     private static int linea = 0;
+    private static boolean nextRAM = false;
+    private static String startRAM;
+    private static String wordsRAM;
+    private static String endRAM;
 
     public AssemblerProcess(Ensamblador e) {
         ens = e;
@@ -34,12 +38,21 @@ public class AssemblerProcess implements Runnable {
                 // System.out.println(line);
                 output += line;
                 output2 += line + "\n";
-                if (line.contains("R31")) {
+                if (line.contains("R31")) { // Registries
                     if (++linea == 1) {
                         output = "88110> run" + output.substring(output.indexOf("pro.bin") + 7);
                     }
                     // System.out.println(output);
                     updateAssembler(output);
+                    break;
+                } else if (nextRAM && line.contains(" " + endRAM + " ")) {// Data/RAM
+                    output = output.substring(11 + startRAM.length() + wordsRAM.length());
+                    output2 = output2.substring(11 + startRAM.length() + wordsRAM.length());
+                    System.out.println(output2);
+                    ens.updateRAM(output2);
+                    nextRAM = false;
+                    startRAM = null;
+                    endRAM = null;
                     break;
                 }
             }
@@ -52,6 +65,23 @@ public class AssemblerProcess implements Runnable {
 
         try {
             writer.write("t " + steps + "\n");
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void showRAM(int start, int words) {
+        startRAM = "" + start;
+        wordsRAM = "" + words;
+        int firstNum = start - (start % 16);
+        int end = start + (words - 1) * 4;
+        int lastNum = end - (end % 16);
+        try {
+            nextRAM = true;
+            startRAM = "" + firstNum;
+            endRAM = "" + lastNum;
+            writer.write("v " + start + " " + words + "\n");
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,7 +115,11 @@ public class AssemblerProcess implements Runnable {
         String[] valKeys = { "PC", "Instrucciones", "Ciclo", "FL", "FE", "FC", "FV", "FR" };
         int[] vals = new int[8];
         for (int i = 0; i < vals.length; i++) {
-            vals[i] = Integer.parseInt(ap.get(valKeys[i]));
+            if (ap.get(valKeys[i]).startsWith("0x")) {
+                vals[i] = Integer.parseInt(ap.get(valKeys[i]).substring(2), 16);
+            } else {
+                vals[i] = Integer.parseInt(ap.get(valKeys[i]));
+            }
         }
         String instruction = ap.get("Instruccion");
         String[] regs = ap.getRegistries();

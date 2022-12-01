@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 
 import gui.labels.RegistryLabel;
 import gui.panels.ControlPanel;
+import gui.panels.DataPanel;
 import gui.panels.DisplayPanel;
 import gui.panels.InfoPanel;
 import gui.panels.OutputPanel;
@@ -19,15 +20,16 @@ import model.Registry;
 public class RegDisplay extends JFrame {
 
     JFrame f;
-    Ensamblador ens;
-    Registry[] regs;
-    RegistryLabel[] labels;
-    HashMap<String, JLabel> lbls;
-    RegPanel rp;
-    InfoPanel ip;
-    DisplayPanel dp;
-    OutputPanel op;
-    ControlPanel cp;
+    public Ensamblador ens;
+    public Registry[] regs;
+    public RegistryLabel[] labels;
+    public HashMap<String, JLabel> lbls;
+    public RegPanel rp;
+    public InfoPanel ip;
+    public DisplayPanel dp;
+    public OutputPanel op;
+    public ControlPanel cp;
+    public DataPanel dp2;
 
     public RegDisplay(String s, Ensamblador ens) {
         super(s);
@@ -57,10 +59,17 @@ public class RegDisplay extends JFrame {
 
         op = new OutputPanel(ens, this);
         r = rp.getBounds();
-        op.setBounds(r.x, r.y + 280 - 1, 4 * width + 2, 10 * height + 2);
-        op.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
-        op.setOpaque(true);
+        op.setBounds(r.x, r.y + 280 - height - 1, 4 * width + 2, 10 * height + 2);
+        // op.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
+        op.setOpaque(false);
         this.add(op);
+
+        dp2 = new DataPanel(ens);
+        dp2.setBounds(r.x + 1, r.y + 280 - 1, 4 * width + 2, 10 * height + 2);
+        dp2.setVisible(true);
+        dp2.setBackground(Colors.BACKGROUND);
+        dp2.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
+        this.add(dp2);
 
         cp = new ControlPanel(ens, this);
         cp.setBounds(4 * width + 2 * height - 1, 10 * height - 1, 2 * width + height + 2, 15 * height + 2);
@@ -105,11 +114,15 @@ public class RegDisplay extends JFrame {
         lbls.get("instruccion").setText("Next | " + ens.instruction);
 
         op.update();
-
+        dp2.update(ens.lastRAM);
     }
 
     public RegPanel getRegPanel() {
         return rp;
+    }
+
+    public DataPanel getDataPanel() {
+        return dp2;
     }
 
     public void setIncludeSpaces(boolean b) {

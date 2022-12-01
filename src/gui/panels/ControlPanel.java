@@ -21,15 +21,19 @@ import network.AssemblerProcess;
 
 public class ControlPanel extends JPanel {
 
-    RegDisplay reg;
-    JButton back;
-    JButton next;
-    stepSpinner backSpinner;
-    stepSpinner nextSpinner;
+    public RegDisplay reg;
+    public JButton back;
+    public JButton next;
+    public stepSpinner backSpinner;
+    public stepSpinner nextSpinner;
+    public stepSpinner RAMSpinner;
+    public stepSpinner wordsSpinner;
 
     public ControlPanel(Ensamblador ens, RegDisplay display) {
         SpinnerModel model = new javax.swing.SpinnerNumberModel(1, 1, 100, 1);
-        SpinnerModel model2 = new javax.swing.SpinnerNumberModel(1, 1, 100, 1);
+        SpinnerModel model2 = new javax.swing.SpinnerNumberModel(1, 1, 10000, 1);
+        SpinnerModel model3 = new javax.swing.SpinnerNumberModel(0, 0, 10000, 4);
+        SpinnerModel model4 = new javax.swing.SpinnerNumberModel(32, 6, 32, 1);
         this.reg = display;
         setLayout(null);
         setVisible(true);
@@ -64,6 +68,33 @@ public class ControlPanel extends JPanel {
         nextSpinner = new stepSpinner(model2);
         nextSpinner.setBounds(200 + 2, 60, 100, 40);
         this.add(nextSpinner);
+
+        JButton RAMLabel = new JButton("MP");
+        RAMLabel.setBounds(0, 100 + 1, 100, 60);
+        RAMLabel.setOpaque(true);
+        RAMLabel.setBackground(Colors.BACKGROUND);
+        RAMLabel.setForeground(Colors.FOREGROUND);
+        RAMLabel.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
+        RAMLabel.addActionListener(new refreshRAMAction());
+        this.add(RAMLabel);
+
+        RAMSpinner = new stepSpinner(model3);
+        RAMSpinner.setBounds(0, 100 + 60 + 1, 100, 40);
+        this.add(RAMSpinner);
+
+        JButton wordsLabel = new JButton("Words");
+        wordsLabel.setBounds(200 + 2, 100 + 1, 100, 60);
+        wordsLabel.setOpaque(true);
+        wordsLabel.setBackground(Colors.BACKGROUND);
+        wordsLabel.setForeground(Colors.FOREGROUND);
+        wordsLabel.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
+        wordsLabel.addActionListener(new refreshRAMAction());
+        this.add(wordsLabel);
+
+        wordsSpinner = new stepSpinner(model4);
+        wordsSpinner.setBounds(200 + 2, 100 + 60 + 1, 100, 40);
+        this.add(wordsSpinner);
+
     }
 
     class nextInstructionAction implements ActionListener {
@@ -76,7 +107,33 @@ public class ControlPanel extends JPanel {
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
+            Integer value = (Integer) RAMSpinner.getValue();
+            Integer words = (Integer) wordsSpinner.getValue();
+            AssemblerProcess.showRAM(value, words);
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
             reg.updateLabels();
+            reg.dp2.update(reg.ens.lastRAM);
+        }
+
+    }
+
+    class refreshRAMAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Integer value = (Integer) RAMSpinner.getValue();
+            Integer words = (Integer) wordsSpinner.getValue();
+            AssemblerProcess.showRAM(value, words);
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            reg.dp2.update(reg.ens.lastRAM);
         }
 
     }
@@ -87,12 +144,14 @@ public class ControlPanel extends JPanel {
         public void mouseWheelMoved(MouseWheelEvent e) {
             JSpinner source = (JSpinner) e.getSource();
             int value = (Integer) source.getValue();
-            if (e.getWheelRotation() < 0) {
-                value++;
-            } else if (value > 1) {
-                value--;
+            try {
+                if (e.getWheelRotation() < 0) {
+                    source.getModel().setValue(source.getModel().getNextValue());
+                } else if (value > 1) {
+                    source.getModel().setValue(source.getModel().getPreviousValue());
+                }
+            } catch (IllegalArgumentException ex) {
             }
-            source.setValue(Integer.valueOf(value));
         }
 
     }

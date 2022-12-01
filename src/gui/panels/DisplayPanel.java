@@ -14,8 +14,15 @@ import gui.labels.RegistryLabel;
 
 public class DisplayPanel extends JPanel {
 
-    RegDisplay reg;
-    String[] options = { "Regs", "Dec Sign", "R--", "Spacing", "Hotel?", "Trivago" };
+    public RegDisplay reg;
+    public String[] options = { "Regs", "Dec Sign", "R--", "Spacing", "MP", "Trivago" };
+
+    public JButton cycleDisplay;
+    public JButton decSign;
+    public JButton displayR;
+    public JButton displaySpacing;
+    public JButton b1;
+    public JButton b2;
 
     public DisplayPanel(RegDisplay display) {
         this.reg = display;
@@ -42,7 +49,7 @@ public class DisplayPanel extends JPanel {
             this.add(button);
         }
 
-        JButton cycleDisplay = new JButton();
+        cycleDisplay = new JButton();
         cycleDisplay.setText(RegistryLabel.intToDisplayMode(RegistryLabel.HEX));
         cycleDisplay.setBounds(70, 40, 70, 20);
         cycleDisplay.addActionListener(new nextDisplayModeAction());
@@ -52,7 +59,7 @@ public class DisplayPanel extends JPanel {
         cycleDisplay.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
         this.add(cycleDisplay);
 
-        JButton decSign = new JButton();
+        decSign = new JButton();
         decSign.setText("Unsigned");
         decSign.setBounds(70, 60, 70, 20);
         decSign.addActionListener(new signDisplayModeAction());
@@ -62,7 +69,7 @@ public class DisplayPanel extends JPanel {
         decSign.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
         this.add(decSign);
 
-        JButton displayR = new JButton();
+        displayR = new JButton();
         displayR.setText("Yes");
         displayR.setBounds(70, 80, 70, 20);
         displayR.addActionListener(new displayRAction());
@@ -72,7 +79,7 @@ public class DisplayPanel extends JPanel {
         displayR.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
         this.add(displayR);
 
-        JButton displaySpacing = new JButton();
+        displaySpacing = new JButton();
         displaySpacing.setText("Yes");
         displaySpacing.setBounds(70, 100, 70, 20);
         displaySpacing.addActionListener(new displaySpacingAction());
@@ -82,17 +89,17 @@ public class DisplayPanel extends JPanel {
         displaySpacing.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
         this.add(displaySpacing);
 
-        JButton b1 = new JButton();
-        b1.setText("Useless");
+        b1 = new JButton();
+        b1.setText("HEX");
         b1.setBounds(70, 120, 70, 20);
-        // b1.addActionListener(new b1Action());
+        b1.addActionListener(new nextDisplayDataAction());
         b1.setOpaque(true);
         b1.setBackground(Colors.BACKGROUND);
         b1.setForeground(Colors.FOREGROUND);
         b1.setBorder(BorderFactory.createLineBorder(Colors.BORDER, 1));
         this.add(b1);
 
-        JButton b2 = new JButton();
+        b2 = new JButton();
         b2.setText("Button");
         b2.setBounds(70, 140, 70, 20);
         // b2.addActionListener(new b2Action());
@@ -114,6 +121,22 @@ public class DisplayPanel extends JPanel {
             }
             source.setText(RegistryLabel.intToDisplayMode(mode));
             reg.getRegPanel().setDisplayMode(mode);
+        }
+
+    }
+
+    class nextDisplayDataAction implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton source = (JButton) e.getSource();
+            int mode = reg.getDataPanel().displayMode;
+            if (mode-- == DataPanel.HEX) {
+                mode = DataPanel.CHAR;
+            }
+            source.setText(DataPanel.intToDisplayMode(mode));
+            reg.getDataPanel().displayMode = mode;
+            reg.getDataPanel().setDisplayMode(mode);
         }
 
     }

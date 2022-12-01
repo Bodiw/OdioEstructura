@@ -6,12 +6,12 @@ public class Gui {
 
     String s;
     Ensamblador ens;
-    RegDisplay frame;
+    public RegDisplay regDisp;
 
     public Gui(String s, Ensamblador ens) {
         this.s = s;
         this.ens = ens;
-        frame = new RegDisplay(s, ens);
+        regDisp = new RegDisplay(s, ens);
     }
 
 }
